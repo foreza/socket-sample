@@ -97,18 +97,22 @@ function onListening() {
 
 // Socket.io code
 
-io.on('connection', function(socket){
+let userCount = 0;
 
-  socket.broadcast.emit('chat message' , 'New user has connected!');
-    // console.log('a user connected');
+io.on('connection', function(socket){
+  userCount++;
+  let userID = userCount;
+  
+
+  socket.broadcast.emit('chat message' , `New user=${userID} has connected - ` + userCount);
 
   // When 'chat message' event is received by io, broadcast to all other parties
   socket.on('chat message', function(msg){
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
+    io.emit('chat message', `User-${userID}: ${msg}`);
   });
 
   socket.on('disconnect', function(){
-    console.log('user disconnected');
+    userCount--;
+    console.log('user disconnected, current count:', userCount);
   });
 });
